@@ -1,8 +1,6 @@
 package com.estore.service;
 
-import com.estore.entity.Orders;
-import com.estore.entity.Product;
-import com.estore.entity.User;
+import com.estore.entity.*;
 import com.estore.dto.*;
 
 import java.util.List;
@@ -27,4 +25,10 @@ public interface UserService {
     boolean deleteOrder(long userId);
 
     List<OrdersByUserIdResponse> getOrderProductsByUserId(long userId);
+
+   User updateUserName(UpdateNameRequest updateNameRequest);
+   Credentials updatePhone(UpdatePhoneNumberRequest req);
+   User updateDob(UpdateDobRequest req);
+   Address updateAddress(UpdateAddressRequest req);
+   Optional<?> updatePwd(UpdatePasswordRequest req);
 }

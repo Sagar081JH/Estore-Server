@@ -127,13 +127,21 @@ public class UserImpl implements UserService {
 
     @Override
     public Optional<User> updateUser(long id,User user) {
-        try{
-            if(userRepo.existsById(id)){
-                return Optional.of(userRepo.save(user));
-            }
-        }catch (Exception e){
-            System.out.println(e+":"+e.getMessage());
-        }
+//        User user = updateUserRequest.getUser();
+//        Credentials credentials=updateUserRequest.getCredentials();
+//        Address address=updateUserRequest.getAddress();
+//        try{
+//            if(userRepo.existsById(id)){
+//                User savedUser=userRepo.save(user);
+//                credentials.setUser(savedUser);
+//                credRepo.save(credentials);
+//                address.setUser(savedUser);
+//                addressRepo.save(address);
+//                return Optional.of(user);
+//            }
+//        }catch (Exception e){
+//            System.out.println(e+":"+e.getMessage());
+//        }
         return Optional.empty();
     }
 
@@ -290,5 +298,100 @@ public class UserImpl implements UserService {
             System.out.println("getOrdersByUserId:"+e.getMessage());
         }
         return List.of();
+    }
+
+    @Override
+    public User updateUserName(UpdateNameRequest updateNameRequest) {
+       try {
+           if(userRepo.existsById(updateNameRequest.getUserId())){
+               Optional<User> user = userRepo.findById(updateNameRequest.getUserId());
+               if(user.isPresent()){
+                   user.get().setFirstName(updateNameRequest.getFirstName());
+                   user.get().setLastName(updateNameRequest.getLastName());
+                  return userRepo.save(user.get());
+               }
+               return null;
+           }
+       }catch (Exception e){
+           System.out.println("updateUserName:"+e.getMessage());
+       }
+        return null;
+    }
+
+    @Override
+    public Credentials updatePhone(UpdatePhoneNumberRequest req) {
+        try {
+            if(userRepo.existsById(req.getUserId())){
+                Optional<Credentials> cred = credRepo.findById(req.getCredId());
+                if(cred.isPresent()){
+                    cred.get().setPhoneNumber(req.getPhoneNo());
+                    return credRepo.save(cred.get());
+                }
+                return null;
+            }
+        }catch (Exception e){
+            System.out.println("update phone number:"+e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public User updateDob(UpdateDobRequest req) {
+        try {
+            if(userRepo.existsById(req.getUserId())){
+                Optional<User> user = userRepo.findById(req.getUserId());
+                if(user.isPresent()){
+                    user.get().setDateOfBirth(req.getDateOfBirth());
+                    return userRepo.save(user.get());
+                }
+                return null;
+            }
+        }catch (Exception e){
+            System.out.println("update-Dob:"+e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public Address updateAddress(UpdateAddressRequest req) {
+        try {
+            if(userRepo.existsById(req.getUserId())){
+                Optional<Address> address = addressRepo.findById(req.getAddressId());
+                if(address.isPresent()){
+                    address.get().setArea(req.getArea());
+                    address.get().setCity(req.getCity());
+                    address.get().setState(req.getState());
+                    address.get().setCountry(req.getCountry());
+                    address.get().setPinCode(req.getPinCode());
+                    return addressRepo.save(address.get());
+                }
+                return null;
+            }
+        }catch (Exception e){
+            System.out.println("updateUserName:"+e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public Optional<?> updatePwd(UpdatePasswordRequest req) {
+        try {
+            if(userRepo.existsById(req.getUserId())){
+                Optional<Credentials> cred = credRepo.findById(req.getCredId());
+                if(cred.isPresent()){
+                    if(cred.get().getPwd().equals(req.getOldPwd())){
+                        cred.get().setPwd(req.getNewPwd());
+                        return Optional.of(credRepo.save(cred.get()));
+                    }else{
+                        return Optional.of("Incorrect old password!");
+                    }
+                }
+                return Optional.of("Credentials not found with given cred Id!");
+            }
+            return Optional.of("User not found with given user Id!");
+        }catch (Exception e){
+            System.out.println("update phone number:"+e.getMessage());
+        }
+        return Optional.empty();
     }
 }
