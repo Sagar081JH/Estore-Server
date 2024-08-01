@@ -6,6 +6,9 @@ import com.estore.repository.*;
 import com.estore.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,8 +32,10 @@ public class UserImpl implements UserService {
     @Autowired
     ProductsRepo productsRepo;
 
+
     @Override
     public Optional<?> register(Registration registration) {
+//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user = registration.getUser();
         Address address= registration.getAddress();
         Credentials credentials=registration.getCredentials();
@@ -43,6 +48,7 @@ public class UserImpl implements UserService {
             if(existingEmail == 0 && existingPhoneNo == 0) {
                 User savedUser=userRepo.save(user);
                 credentials.setUser(savedUser);
+//                credentials.setPwd(bCryptPasswordEncoder.encode(credentials.getPwd()));
                 credRepo.save(credentials);
                 address.setUser(savedUser);
                 addressRepo.save(address);
@@ -74,18 +80,24 @@ public class UserImpl implements UserService {
     @Override
     public Optional<LoginResponse> login(LoginRequest loginRequest) {
         try{
-            long userId = credRepo
-                    .loginByPhoneOrEmailAndPwd(loginRequest.getPhoneNo(),
-                            loginRequest.getEmail(),
-                            loginRequest.getPwd());
-            if(userId !=0){
-               Optional<User> user = userRepo.findById(userId);
-               Address address= addressRepo.findByIdUserId(userId);
-               Credentials credentials = credRepo.findByIdUserId(userId);
+            BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
+           Optional<Credentials> credentials = Optional.empty();
+           if(loginRequest.getUsername().contains("@")){
+               credentials= Optional.ofNullable(credRepo.findByEmail(loginRequest.getUsername()));
+           }
+          else{
+               credentials= Optional.ofNullable(credRepo.findByPhone(Long.parseLong(loginRequest.getUsername())));
+           }
+           boolean isPwdValid = bCryptPasswordEncoder.matches(loginRequest.getPassword(),credentials.get().getPwd());
+
+            if(isPwdValid){
+                long id=credentials.get().getUser().getUserId();
+                Credentials credentials1=credRepo.findByIdUserId(id);
+                credentials1.setPwd(loginRequest.getPassword());
                LoginResponse loginResponse = LoginResponse.builder()
-                       .user(user.get())
-                       .address(address)
-                       .credentials(credentials)
+                       .user(userRepo.findById(id).get())
+                       .address(addressRepo.findByIdUserId(id))
+                       .credentials(credentials1)
                        .build();
                return Optional.ofNullable(loginResponse);
            }
@@ -122,26 +134,6 @@ public class UserImpl implements UserService {
             System.out.println(e+":"+e.getMessage());
         }
 
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<User> updateUser(long id,User user) {
-//        User user = updateUserRequest.getUser();
-//        Credentials credentials=updateUserRequest.getCredentials();
-//        Address address=updateUserRequest.getAddress();
-//        try{
-//            if(userRepo.existsById(id)){
-//                User savedUser=userRepo.save(user);
-//                credentials.setUser(savedUser);
-//                credRepo.save(credentials);
-//                address.setUser(savedUser);
-//                addressRepo.save(address);
-//                return Optional.of(user);
-//            }
-//        }catch (Exception e){
-//            System.out.println(e+":"+e.getMessage());
-//        }
         return Optional.empty();
     }
 
@@ -375,13 +367,17 @@ public class UserImpl implements UserService {
 
     @Override
     public Optional<?> updatePwd(UpdatePasswordRequest req) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         try {
             if(userRepo.existsById(req.getUserId())){
                 Optional<Credentials> cred = credRepo.findById(req.getCredId());
                 if(cred.isPresent()){
-                    if(cred.get().getPwd().equals(req.getOldPwd())){
-                        cred.get().setPwd(req.getNewPwd());
-                        return Optional.of(credRepo.save(cred.get()));
+                    boolean isOldPwdValid = bCryptPasswordEncoder.matches(req.getOldPwd(),cred.get().getPwd());
+                    if(isOldPwdValid){
+                        cred.get().setPwd(bCryptPasswordEncoder.encode(req.getNewPwd()));
+                        Credentials newCred =credRepo.save(cred.get());
+                        newCred.setPwd(req.getNewPwd());
+                        return Optional.of(newCred);
                     }else{
                         return Optional.of("Incorrect old password!");
                     }
@@ -393,5 +389,30 @@ public class UserImpl implements UserService {
             System.out.println("update phone number:"+e.getMessage());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public LoginResponse findUserDetailsByUsername(String username) {
+        try {
+            Credentials credentials;
+            if(username.contains("@")){
+                credentials = credRepo.findByEmail(username);
+            }else{
+                credentials=credRepo.findByPhone(Long.parseLong(username));
+            }
+            if(credentials !=null){
+                Optional<User> user= userRepo.findById(credentials.getUser().getUserId());
+                Address address=addressRepo.findByUserId(user.get().getUserId());
+                return LoginResponse.builder()
+                        .user(user.get())
+                        .credentials(credentials)
+                        .address(address)
+                        .build();
+            }
+            return null;
+        }catch (Exception e){
+            System.out.println("Find-By-Username:"+e.getMessage());
+        }
+        return null;
     }
 }

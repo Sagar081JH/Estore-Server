@@ -3,7 +3,6 @@ package com.estore.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-
 @Entity
 @Data
 @Table(name="user")

@@ -2,22 +2,34 @@ package com.estore.controller;
 
 import com.estore.dto.LoginRequest;
 import com.estore.dto.LoginResponse;
+import com.estore.dto.Registration;
+import com.estore.dto.UpdateNameRequest;
+import com.estore.entity.User;
 import com.estore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
+@CrossOrigin()
 public class LoginController {
     @Autowired
     UserService userService;
+
+//    @Autowired
+//    AuthenticationManager authenticationManager;
+
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
+
 
     @PostMapping("/login")
     ResponseEntity<Optional<?>> login(@RequestBody LoginRequest loginRequest){
@@ -27,4 +39,21 @@ public class LoginController {
         }
         return new ResponseEntity<>(Optional.of("Couldn't login : incorrect credentials!"), HttpStatus.UNAUTHORIZED);
     }
+
+    @PostMapping("/register")
+    ResponseEntity<Optional<?>> addUser(@RequestBody Registration registration){
+        registration.getCredentials().setPwd(bCryptPasswordEncoder.encode(registration.getCredentials().getPwd()));
+        Optional<?> newUser = userService.register(registration);
+        if(newUser.isPresent()){
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(Optional.of("Couldn't add : Registration Failed!"), HttpStatus.BAD_GATEWAY);
+    }
+
+//    @PostMapping("/login")
+//    ResponseEntity<Optional<?>> login2(@RequestBody LoginRequest loginRequest){
+//        Authentication authentication=authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.getEmail(),loginRequest.getPwd()));
+//        return new ResponseEntity<>(Optional.of(authentication), HttpStatus.OK);
+//    }
+
 }

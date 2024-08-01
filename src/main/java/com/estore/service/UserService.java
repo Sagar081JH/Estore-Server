@@ -2,6 +2,7 @@ package com.estore.service;
 
 import com.estore.entity.*;
 import com.estore.dto.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +14,6 @@ public interface UserService {
 
     Optional<User> getMyDetails(long id);
     Optional<User> removeUserById(long id);
-    Optional<User> updateUser(long id,User user);
     Optional<List<CartItemResponse>> getCart(long userId);
     Optional<?> addCartItem(CartItemAddRequest cartItemAddRequest);
     Optional<?> priceSummaryTotalPrice(long userId);
@@ -26,9 +26,12 @@ public interface UserService {
 
     List<OrdersByUserIdResponse> getOrderProductsByUserId(long userId);
 
+    //Update
    User updateUserName(UpdateNameRequest updateNameRequest);
    Credentials updatePhone(UpdatePhoneNumberRequest req);
    User updateDob(UpdateDobRequest req);
    Address updateAddress(UpdateAddressRequest req);
    Optional<?> updatePwd(UpdatePasswordRequest req);
+
+   LoginResponse findUserDetailsByUsername(String username);
 }

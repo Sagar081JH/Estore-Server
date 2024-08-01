@@ -70,12 +70,12 @@ public class AdminController {
         return new ResponseEntity<>(Optional.of("Couldn't Remove : User Not Found!"), HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping("/admin/{userId}")
-    ResponseEntity<Optional<?>> updateUser(@PathVariable long userId,@RequestBody User user){
-        Optional<User> updatedUser = userService.updateUser(userId,user);
-        if(updatedUser.isPresent()){
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(Optional.of("Couldn't Update : User Not Found!"), HttpStatus.NOT_FOUND);
-    }
+//    @PutMapping("/admin/{userId}")
+//    ResponseEntity<Optional<?>> updateUser(@PathVariable long userId,@RequestBody User user){
+//        Optional<User> updatedUser = userService.updateUser(userId,user);
+//        if(updatedUser.isPresent()){
+//            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(Optional.of("Couldn't Update : User Not Found!"), HttpStatus.NOT_FOUND);
+//    }
 }

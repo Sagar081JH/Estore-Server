@@ -16,5 +16,8 @@ public interface AddressRepo extends CrudRepository<Address,Long> {
 
     @Query(value = "select * from address where user_id=?1",nativeQuery = true)
     Address findByIdUserId(long userId);
+
+    @Query(value = "select * from address where user_id=?1",nativeQuery = true)
+    Address findByUserId(long userId);
 }
 

@@ -26,5 +26,11 @@ public interface CredRepo extends CrudRepository<Credentials,Long> {
 
     @Query(value = "select * from credentials where user_id=?1",nativeQuery = true)
     Credentials findByIdUserId(long userId);
+
+    @Query(value = "select * from credentials where email=?1",nativeQuery = true)
+    Credentials findByEmail(String email);
+
+    @Query(value = "select * from credentials where phone_number=?1",nativeQuery = true)
+    Credentials findByPhone(long phone);
 }
 
