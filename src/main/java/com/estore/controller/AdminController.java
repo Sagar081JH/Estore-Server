@@ -52,13 +52,29 @@ public class AdminController {
         return new ResponseEntity<>(Optional.of("Couldn't add : Registration Failed!"), HttpStatus.BAD_GATEWAY);
     }
 
-    @PostMapping("/admin/add_product")
-    ResponseEntity<Optional<?>> addNewProduct(@RequestBody Product product){
-        Optional<Product> newProduct = adminService.addNewProduct(product);
+    @PostMapping("/products")
+    ResponseEntity<Optional<?>> addProduct(@RequestBody Product product){
+        Optional<Product> newProduct = adminService.addProduct(product);
         if(newProduct.isPresent()){
             return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(Optional.of("Couldn't add : Registration Failed!"), HttpStatus.BAD_GATEWAY);
+    }
+    @PutMapping("/products/{pid}")
+    ResponseEntity<Optional<?>> editProduct(@PathVariable long pid,@RequestBody Product product){
+        Optional<?> newProduct = adminService.editProduct(pid,product);
+        if(newProduct.isPresent()){
+            return new ResponseEntity<>(newProduct, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(Optional.of("Couldn't add : Registration Failed!"), HttpStatus.BAD_GATEWAY);
+    }
+    @DeleteMapping("/products/{pid}")
+    ResponseEntity<Optional<?>> deleteProduct(@PathVariable long pid){
+        Optional<Boolean> newProduct = adminService.deleteProduct(pid);
+        if(newProduct.isPresent()){
+            return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(Optional.of("Couldn't delete !"), HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/admin/{userId}")

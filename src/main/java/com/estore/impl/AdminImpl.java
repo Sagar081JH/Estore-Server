@@ -83,7 +83,7 @@ public class AdminImpl implements AdminService {
     }
 
     @Override
-    public Optional<Product> addNewProduct(Product product){
+    public Optional<Product> addProduct(Product product){
         Optional<Product> product1;
         if(!productsRepo.existsById(product.getProductId())){
             product1= Optional.of(productsRepo.save(product));
@@ -91,7 +91,6 @@ public class AdminImpl implements AdminService {
         }
         return Optional.empty();
     }
-
     @Override
     public Optional<List<Product>> getProducts(){
         List<Product> products = new ArrayList<>();
@@ -101,5 +100,33 @@ public class AdminImpl implements AdminService {
             System.out.println(e+":"+e.getMessage());
         }
         return Optional.of(products);
+    }
+    @Override
+    public Optional<Boolean> deleteProduct(long productId) {
+        try {
+            if(productsRepo.existsById(productId)){
+                productsRepo.deleteById(productId);
+                return Optional.of(true);
+            }else{
+                return Optional.of(false);
+            }
+        }catch (Exception e){
+            System.out.println("delete product failed :"+e.getMessage());
+        }
+        return Optional.of(false);
+    }
+
+    @Override
+    public Optional<?> editProduct(long productId,Product editedProduct) {
+        try {
+            if(productsRepo.existsById(productId)){
+                return Optional.of(productsRepo.save(editedProduct));
+            }else{
+                return Optional.of("Product does not exists!");
+            }
+        }catch (Exception e){
+            System.out.println("edit product failed :"+e.getMessage());
+        }
+        return Optional.of("");
     }
 }
