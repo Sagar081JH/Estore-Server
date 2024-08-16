@@ -54,6 +54,12 @@
 <!--			<artifactId>spring-boot-starter-undertow</artifactId>-->
 <!--		</dependency>-->
 
+<!--		Spring Boot Actuator is a component of the Spring Boot framework that provides production-ready operational monitoring and management capabilities.-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
