@@ -5,6 +5,7 @@ import com.estore.dto.LoginResponse;
 import com.estore.dto.Registration;
 import com.estore.dto.UpdateNameRequest;
 import com.estore.entity.User;
+import com.estore.service.LoginService;
 import com.estore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,8 @@ public class LoginController {
     @Autowired
     UserService userService;
 
-//    @Autowired
-//    AuthenticationManager authenticationManager;
+    @Autowired
+    LoginService loginService;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -48,6 +49,15 @@ public class LoginController {
             return new ResponseEntity<>(newUser, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(Optional.of("Couldn't add : Registration Failed!"), HttpStatus.BAD_GATEWAY);
+    }
+
+    @PostMapping("/forgotPassword")
+    ResponseEntity<Optional<?>> forgotPwd(@RequestBody String email){
+        Optional<?> resp = loginService.forgotPassword(email);
+        if(resp.isPresent()){
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(Optional.of("Couldn't forgot!"), HttpStatus.BAD_GATEWAY);
     }
 
 //    @PostMapping("/login")
