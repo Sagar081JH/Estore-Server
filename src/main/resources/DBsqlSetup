@@ -1,0 +1,8 @@
+CREATE DATABASE estore_db_5;
+use estore_db_5;
+show tables;
+
+insert into products (product_id,title,info,price,color,storage,display,ram_rom,processor,rear_camera,front_camera,battery) values (1,"Apple Iphone 14","Apple's flagship iphone with bionic 13 processor",69999, "White","128 GB","6.1' retina HDR","NA | 128GB", "Bionic 13","12 MP","12 + 12 MP", "3000 mAh");
+insert into products (product_id,title,info,price,color,storage,display,ram_rom,processor,rear_camera,front_camera,battery) values (2,"Apple Iphone 15","Apple's flagship iphone with bionic 14 processor",79999, "White","128 GB","6.1' retina HDR","NA | 128GB", "Bionic 13","12 MP","12 + 12 MP", "3200 mAh");
+insert into products (product_id,title,info,price,color,storage,display,ram_rom,processor,rear_camera,front_camera,battery) values (3,"Google pixel 7","Google's flagship phone with Google Tensor G2 Processor",44999, "snow","128 GB","16.0 cm (6.3 inch) Full HD+ Display","8GB | 128GB", "Google Tensor G2 Processor"," 10.8MP","50 + 12 MP", "4270 mAh");
+insert into products (product_id,title,info,price,color,storage,display,ram_rom,processor,rear_camera,front_camera,battery) values (4,"Oneplus 10r pro","Oneplus's flagship phone with Snapdragon Processor",38998, "Emerald Forest","128 GB","17.02 cm (6.7 inch)","8GB | 128GB", "Snapdragon (Dual core 2.4 GHz)"," 20MP","48 MP", "5000 mAh");
