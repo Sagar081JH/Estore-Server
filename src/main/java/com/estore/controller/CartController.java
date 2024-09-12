@@ -4,6 +4,8 @@ package com.estore.controller;
 import com.estore.dto.CartItemAddRequest;
 import com.estore.dto.CartItemResponse;
 import com.estore.service.UserService;
+import com.estore.sort.SortCartItemsByIdAscending;
+import com.estore.sort.SortCartItemsByIdDescending;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,24 @@ public class CartController {
     ResponseEntity<?> getCartItems(@PathVariable long userId){
         Optional<List<CartItemResponse>> cartItems = userService.getCart(userId);
         if(cartItems.isPresent()){
+            cartItems.get().sort(new SortCartItemsByIdDescending());
+            return new ResponseEntity<>(cartItems, HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Couldn't retrieve cart",HttpStatus.BAD_GATEWAY);
+    }
+    @GetMapping("/cart/{userId}/sort")
+    ResponseEntity<?> getSortedCartItems(@RequestParam String by, @PathVariable long userId){
+        Optional<List<CartItemResponse>> cartItems = userService.getCart(userId);
+        if(cartItems.isPresent()){
+            switch (by){
+                case "latest":
+                    cartItems.get().sort(new SortCartItemsByIdDescending());
+                    break;
+                case "oldest":
+                    cartItems.get().sort(new SortCartItemsByIdAscending());
+                    break;
+                default: cartItems.get();
+            }
             return new ResponseEntity<>(cartItems, HttpStatus.OK);
         }
         return new ResponseEntity<>("Couldn't retrieve cart",HttpStatus.BAD_GATEWAY);

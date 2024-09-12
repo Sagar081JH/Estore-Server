@@ -4,6 +4,7 @@ import com.estore.dto.*;
 import com.estore.entity.Address;
 import com.estore.entity.Credentials;
 import com.estore.entity.User;
+import com.estore.exception.UserNotFoundException;
 import com.estore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,8 @@ public class UserController {
         if (user.isPresent()) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
-        return new ResponseEntity<>(Optional.of("Couldn't get : User Not Found!"), HttpStatus.NOT_FOUND);
+        throw new UserNotFoundException("User not found with id : "+userId);
+        //return new ResponseEntity<>(Optional.of("Couldn't get : User Not Found!"), HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/update/name")

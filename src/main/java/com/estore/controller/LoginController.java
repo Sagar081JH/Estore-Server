@@ -3,16 +3,12 @@ package com.estore.controller;
 import com.estore.dto.LoginRequest;
 import com.estore.dto.LoginResponse;
 import com.estore.dto.Registration;
-import com.estore.dto.UpdateNameRequest;
-import com.estore.entity.User;
+import com.estore.exception.LoginFailedException;
 import com.estore.service.LoginService;
 import com.estore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +34,8 @@ public class LoginController {
         if(response.isPresent()){
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        return new ResponseEntity<>(Optional.of("Couldn't login : incorrect credentials!"), HttpStatus.UNAUTHORIZED);
+        throw new LoginFailedException("Incorrect Username or Password !");
+       // return new ResponseEntity<>(Optional.of("LoginController/login() : Couldn't login due to incorrect credentials!"), HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/register")

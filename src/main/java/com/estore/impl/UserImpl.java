@@ -6,9 +6,7 @@ import com.estore.repository.*;
 import com.estore.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -88,7 +86,11 @@ public class UserImpl implements UserService {
           else{
                credentials= Optional.ofNullable(credRepo.findByPhone(Long.parseLong(loginRequest.getUsername())));
            }
-           boolean isPwdValid = bCryptPasswordEncoder.matches(loginRequest.getPassword(),credentials.get().getPwd());
+          boolean isPwdValid=false;
+
+          if(credentials.isPresent()) {
+              isPwdValid = bCryptPasswordEncoder.matches(loginRequest.getPassword(), credentials.get().getPwd());
+          }
 
             if(isPwdValid){
                 long id=credentials.get().getUser().getUserId();
@@ -102,7 +104,7 @@ public class UserImpl implements UserService {
                return Optional.ofNullable(loginResponse);
            }
         }catch (Exception e){
-            System.out.println(e+":"+e.getMessage());
+            System.out.println(e+":"+e.getMessage()+" : "+e);
         }
         return Optional.empty();
     }
@@ -305,6 +307,7 @@ public class UserImpl implements UserService {
                     response.add(OrdersByUserIdResponse.builder()
                             .order_id(order.getOrder_id())
                             .product(productsRepo.findById(order.getProduct_id()))
+                            .orderDate(order.getOrderDate())
                             .build());
                 });
             }

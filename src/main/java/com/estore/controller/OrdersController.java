@@ -4,6 +4,8 @@ import com.estore.entity.Orders;
 import com.estore.entity.Product;
 import com.estore.dto.OrdersByUserIdResponse;
 import com.estore.service.UserService;
+import com.estore.sort.SortOrdersByDate;
+import com.estore.sort.SortOrdersByIdDescending;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,7 @@ public class OrdersController {
         if(ordersList.isEmpty()){
             return new ResponseEntity<>("No order present!", HttpStatus.NOT_FOUND);
         }else{
+           ordersList.sort(new SortOrdersByIdDescending());
             return new ResponseEntity<>(ordersList, HttpStatus.OK);
         }
     }

@@ -1,11 +1,13 @@
 package com.estore.controller;
-
-
 import com.estore.entity.Product;
 import com.estore.entity.User;
 import com.estore.dto.Registration;
 import com.estore.service.AdminService;
 import com.estore.service.UserService;
+import com.estore.sort.SortProductsByNameAscending;
+import com.estore.sort.SortProductsByNameDescending;
+import com.estore.sort.SortProductsByPriceAscending;
+import com.estore.sort.SortProductsByPriceDescending;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,29 @@ public class AdminController {
     ResponseEntity<?> getProducts(){
         Optional<List<Product>> products = adminService.getProducts();
         if(products.isPresent()){
+            return new ResponseEntity<>(products, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("Couldn't show : No products available!", HttpStatus.NO_CONTENT);
+    }
+    @GetMapping("/products/sort")
+    ResponseEntity<?> getSortedProducts(@RequestParam String sortBy){
+        Optional<List<Product>> products = adminService.getProducts();
+        if(products.isPresent()){
+            switch (sortBy){
+                case "nameAscending":
+                    products.get().sort(new SortProductsByNameAscending());
+                    break;
+                case "nameDescending":
+                    products.get().sort(new SortProductsByNameDescending());
+                    break;
+                case "priceAscending":
+                    products.get().sort(new SortProductsByPriceAscending());
+                    break;
+                case "priceDescending":
+                    products.get().sort(new SortProductsByPriceDescending());
+                    break;
+                default: products.get();
+            }
             return new ResponseEntity<>(products, HttpStatus.CREATED);
         }
         return new ResponseEntity<>("Couldn't show : No products available!", HttpStatus.NO_CONTENT);
